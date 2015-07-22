@@ -27,7 +27,8 @@
 -(IBAction) state_changed:(id) pan_gesture;
 -(IBAction) initial_swipe_cue:(id) label;
 -(IBAction) final_swipe_cue:(id) label;
--(IBAction) complete_swipe_cue:(id) label;
+-(IBAction) complete_right_swipe_cue:(id) label;
+-(IBAction) complete_left_swipe_cue:(id) label;
 -(IBAction) state_ended:(id) pan_gesture;
 -(IBAction) gestureRecognizerShouldBegin:(id) gesture_recognizer;
 -(IBAction) textFieldShouldReturn:(id) text_field;
@@ -38,6 +39,15 @@
 @end
 
 @interface DecisionViewController: UIViewController
+
+@property IBOutlet UILabel * decision_title;
+@property IBOutlet UITableView * decision_table_view;
+
+-(IBAction) viewDidLoad;
+-(IBAction) decision_object:(id) decision;
+-(IBAction) decisions_ordered;
+-(IBAction) go_back;
+
 @end
 
 @interface MainViewController: UIViewController

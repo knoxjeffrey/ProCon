@@ -71,7 +71,7 @@ class MainTableViewCell < UITableViewCell
       edit_style.tailIndent = -10
       text_attributes = { NSParagraphStyleAttributeName => edit_style 
       }
-      open_label.attributedText = NSAttributedString.alloc.initWithString("Open ", attributes: text_attributes)
+      open_label.attributedText = NSAttributedString.alloc.initWithString("Open", attributes: text_attributes)
 
       open_label.textAlignment = NSTextAlignmentRight
       open_label.font = UIFont.boldSystemFontOfSize(14)
@@ -211,7 +211,6 @@ class MainTableViewCell < UITableViewCell
     if self.frame.origin.x <= -UI_CUES_WIDTH2 * 3
       frameRect = label.frame
       frameRect.origin.x = self.frame.origin.x + label.frame.size.width - self.frame.origin.x
-      puts self.frame.origin.x
       label.frame = frameRect
     end
   end

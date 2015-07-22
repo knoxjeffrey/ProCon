@@ -33,7 +33,7 @@
                     <navigationItem key="navigationItem" id="VYX-dH-3Sj"/>
                     <connections>
                         <outlet property="table_view" destination="0Tq-8k-Qh2" id="tXe-jH-H0e"/>
-                        <segue destination="MD0-6h-07d" kind="presentation" id="uOB-XW-0aO"/>
+                        <segue destination="MD0-6h-07d" kind="presentation" identifier="decision_segue" modalTransitionStyle="flipHorizontal" id="uOB-XW-0aO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E2y-fK-w16" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -51,8 +51,33 @@
                     <view key="view" contentMode="scaleToFill" id="MqD-H8-Az9">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vvt-mn-iC7">
+                                <rect key="frame" x="16" y="100" width="568" height="51"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="m6r-wV-X0U">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="p1y-cT-G3K" firstAttribute="top" secondItem="m6r-wV-X0U" secondAttribute="bottom" id="1II-Y0-rEw"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="m6r-wV-X0U" secondAttribute="trailing" constant="-16" id="PFb-BG-9GS"/>
+                            <constraint firstItem="m6r-wV-X0U" firstAttribute="top" secondItem="3NX-Fe-7Sq" secondAttribute="bottom" id="Rcg-GJ-tPd"/>
+                            <constraint firstItem="m6r-wV-X0U" firstAttribute="leading" secondItem="MqD-H8-Az9" secondAttribute="leadingMargin" constant="-16" id="xLD-1I-VUc"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="decision_table_view" destination="m6r-wV-X0U" id="CTK-qY-kjf"/>
+                        <outlet property="decision_title" destination="vvt-mn-iC7" id="5lg-4C-IJO"/>
+                        <segue destination="4bO-68-LBs" kind="presentation" identifier="unwind_decision_segue" id="XDJ-r1-nlc"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="z6m-s9-6Ic" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

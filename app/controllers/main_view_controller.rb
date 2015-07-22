@@ -15,7 +15,7 @@ class MainViewController < UIViewController
     table_view.registerClass(MainTableViewCell.self, forCellReuseIdentifier: TODO_CELL_ID)
     table_view.separatorStyle = UITableViewCellSeparatorStyleNone
     table_view.backgroundColor = UIColor.blackColor
-    table_view.rowHeight = 50.0
+    table_view.rowHeight = 70.0
     # Very important. Without this the placeholder from UIScrollViewDelegate does not appear if the first action is a swipe to delete
     pulldown
   end
@@ -34,7 +34,18 @@ class MainViewController < UIViewController
         animate_cell_slide_to_right(index, cell, cell_index)
       end
     end
+
+    self.performSegueWithIdentifier("decision_segue", sender: decision)
   end
+
+  def prepareForSegue(segue, sender: sender)
+    if segue.identifier == "decision_segue"
+      segue.destinationViewController.decision_object(sender)
+      table_view.reloadData
+    end
+  end
+
+
   
   # delegate method for custom_table_view_cell
   def decision_deleted(decision) 
