@@ -1,33 +1,35 @@
 class MainTableViewCell < UITableViewCell
   
-  Gesture = Struct.new(:original_center, :delete_on_drag_release)
+  Gesture = Struct.new(:original_center, :delete_on_drag_release, :open_on_drag_release)
   
-  LABEL_LEFT_MARGIN = 15.0
+  LABEL_LEFT_MARGIN = 10.0
   UI_CUES_MARGIN = 30.0
   UI_CUES_WIDTH = 50.0
+  UI_CUES_WIDTH2 =  UIScreen.mainScreen.bounds.size.width/6
   
   attr_reader :decision
   attr_accessor :gesture, :table_view_cell_delegate
   
   def initWithStyle(style, reuseIdentifier: reuseIdentifier)
     super
-    render_label.delegate = self
-    render_label.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter
-    self.addSubview(render_label)
-    self.addSubview(cross_label)
+    render_text_field.delegate = self
+    render_text_field.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter
+    self.addSubview(delete_label)
+    self.addSubview(open_label)
+    self.addSubview(render_text_field)
     
     # remove the default blue highlight for selected cells
     self.selectionStyle = UITableViewCellSelectionStyleNone
     
     # make the Gesture instance variables available throughout this class to determine
     # the state of the gesture
-    @gesture = Gesture.new(CGPoint, false)
+    @gesture = Gesture.new(CGPoint, false, false)
     
     # new layer to create a color gradient for each cell. Light at top to dark at bottom
     self.layer.insertSublayer(gradient_layer, atIndex: 0)
     
-    addGestureRecognizer(recognizer)
-
+    addGestureRecognizer(pan_gesture)
+    
   end
   
   # position each subview
@@ -37,32 +39,57 @@ class MainTableViewCell < UITableViewCell
     #ensure the gradient layers occupies the full bounds
     gradient_layer.frame = self.bounds
     
-    render_label.frame = CGRectMake(LABEL_LEFT_MARGIN, 0,
-                                    self.bounds.size.width - LABEL_LEFT_MARGIN,self.bounds.size.height)  
-    cross_label.frame = CGRectMake(self.bounds.size.width + UI_CUES_MARGIN,
-                                   0, UI_CUES_WIDTH, self.bounds.size.height)
+    render_text_field.frame = CGRectMake(LABEL_LEFT_MARGIN, 0,
+                                    self.bounds.size.width - LABEL_LEFT_MARGIN,self.bounds.size.height)
+
+    open_label.frame = CGRectMake(-self.bounds.size.width,
+                                  0, self.bounds.size.width, self.bounds.size.height) 
+
+    delete_label.frame = CGRectMake(self.bounds.size.width,
+                                   0, self.bounds.size.width, self.bounds.size.height)
   end
   
   def decision=(decision)
     @decision = decision
     
     #we must update all the visual state associated with the model item
-    render_label.text = decision.title
+    render_text_field.text = decision.title
   end
   
-  # create a label that renders the decision title text
-  def render_label
-    @render_label ||= UITextField.alloc.initWithFrame(CGRectNull).tap do |render_label|
-      render_label.textColor = UIColor.whiteColor
-      render_label.font = UIFont.boldSystemFontOfSize(16)
-      render_label.backgroundColor = UIColor.clearColor
+  # create a text field that renders the decision title text
+  def render_text_field
+    @render_text_field ||= UITextField.alloc.initWithFrame(CGRectNull).tap do |render_text_field|
+      render_text_field.textColor = UIColor.whiteColor
+      render_text_field.font = UIFont.boldSystemFontOfSize(16)
+      render_text_field.backgroundColor = UIColor.clearColor
+    end
+  end
+
+  def open_label
+    @open_label ||= self.create_cue_label.tap do |open_label|
+      edit_style = NSMutableParagraphStyle.new
+      edit_style.tailIndent = -10
+      text_attributes = { NSParagraphStyleAttributeName => edit_style 
+      }
+      open_label.attributedText = NSAttributedString.alloc.initWithString("Open ", attributes: text_attributes)
+
+      open_label.textAlignment = NSTextAlignmentRight
+      open_label.font = UIFont.boldSystemFontOfSize(14)
+      open_label.backgroundColor = UIColor.blueColor
     end
   end
   
-  def cross_label
-    @cross_label ||= self.create_cue_label.tap do |cross_label|
-      cross_label.text = "\u2717"
-      cross_label.textAlignment = NSTextAlignmentLeft
+  def delete_label
+    @delete_label ||= self.create_cue_label.tap do |delete_label|
+      edit_style = NSMutableParagraphStyle.new
+      edit_style.firstLineHeadIndent = 10
+      text_attributes = { NSParagraphStyleAttributeName => edit_style 
+      }
+      delete_label.attributedText = NSAttributedString.alloc.initWithString("Delete", attributes: text_attributes)
+
+      delete_label.textAlignment = NSTextAlignmentLeft
+      delete_label.font = UIFont.boldSystemFontOfSize(14)
+      delete_label.backgroundColor = UIColor.redColor
     end
   end
   
@@ -94,56 +121,120 @@ class MainTableViewCell < UITableViewCell
   end
   
   # looks for dragging actions on screen and calls handle_pan
-  def recognizer
-    recognizer ||= UIPanGestureRecognizer.alloc.initWithTarget(self, action: "handle_pan:").tap do |recognizer|
-      recognizer.delegate = self
+  def pan_gesture
+    pan_gesture ||= UIPanGestureRecognizer.alloc.initWithTarget(self, action: "handle_pan:").tap do |pan_gesture|
+      pan_gesture.delegate = self
     end
   end
-  
+
   # handles the pan gesture during the begin, changed and ended states
-  def handle_pan(recognizer)
-    state_began(recognizer)
-    state_changed(recognizer)
-    state_ended(recognizer)
+  def handle_pan(pan_gesture)
+    state_began(pan_gesture)
+    state_changed(pan_gesture)
+    state_ended(pan_gesture)
   end
   
   # if the gesture has just started, record the current centre location
-  def state_began(recognizer)
-    if recognizer.state == UIGestureRecognizerStateBegan
+  def state_began(pan_gesture)
+    if pan_gesture.state == UIGestureRecognizerStateBegan
       gesture.original_center = self.center
     end
   end
   
-  def state_changed(recognizer)
-    if recognizer.state == UIGestureRecognizerStateChanged
+  def state_changed(pan_gesture)
+    if pan_gesture.state == UIGestureRecognizerStateChanged
       # translate the center
-      translation = recognizer.translationInView(self)
+      translation = pan_gesture.translationInView(self)
       self.center = CGPointMake(gesture.original_center.x + translation.x, gesture.original_center.y)
-      
+
+      initial_swipe_cue(open_label)
+      initial_swipe_cue(delete_label)
+
+      final_swipe_cue(open_label)
+      final_swipe_cue(delete_label)
+
+      complete_right_swipe_cue(open_label)
+      complete_left_swipe_cue(delete_label)
+
       #has the item has been dragged far enough to initiate a delete or complete?
       gesture.delete_on_drag_release = self.frame.origin.x < -self.frame.size.width / 2
+      gesture.open_on_drag_release = self.frame.origin.x  > self.frame.size.width / 2
       
       # fade the contextual cues
-      cue_alpha = ((self.frame.origin.x) / (self.frame.size.width / 2)).abs
-      cross_label.alpha = cue_alpha
+      cue_alpha = ((self.frame.origin.x) / (self.frame.size.width / 3)).abs
+      delete_label.alpha = cue_alpha
+      open_label.alpha = cue_alpha
  
       # indicate when the decision titles have been pulled far enough to invoke the given action
-
-      cross_label.textColor = gesture.delete_on_drag_release ? UIColor.redColor : UIColor.whiteColor
+      #open_label.backgroundColor = gesture.open_on_drag_release ? UIColor.greenColor : UIColor.blueColor
+      #delete_label.backgroundColor = gesture.delete_on_drag_release ? UIColor.redColor : UIColor.whiteColor
     end
   end
-  
-  def state_ended(recognizer)
-    if recognizer.state == UIGestureRecognizerStateEnded
+
+  def initial_swipe_cue(label)
+    # swiping right
+    if self.frame.origin.x >= UI_CUES_WIDTH2 && self.frame.origin.x < UI_CUES_WIDTH2 * 2
+      frameRect = label.frame
+      frameRect.origin.x = -self.frame.origin.x - self.bounds.size.width + UI_CUES_WIDTH2
+      label.frame = frameRect
+    # swiping left
+    elsif self.frame.origin.x <= -UI_CUES_WIDTH2 && self.frame.origin.x > -(UI_CUES_WIDTH2 * 2)
+      frameRect = delete_label.frame
+      frameRect.origin.x = -self.frame.origin.x + self.bounds.size.width - UI_CUES_WIDTH2
+      delete_label.frame = frameRect
+    end
+  end
+
+  def final_swipe_cue(label)
+    # swiping right
+    if self.frame.origin.x >= UI_CUES_WIDTH2 * 2 && self.frame.origin.x < UI_CUES_WIDTH2 * 3
+      frameRect = label.frame
+      frameRect.origin.x = self.frame.origin.x - self.bounds.size.width - (UI_CUES_WIDTH2*3)
+      label.frame = frameRect
+    # swiping left
+    elsif self.frame.origin.x <= -UI_CUES_WIDTH2 * 2 && self.frame.origin.x > -(UI_CUES_WIDTH2 * 3)
+      frameRect = delete_label.frame
+      frameRect.origin.x = self.frame.origin.x + self.bounds.size.width + UI_CUES_WIDTH2*3
+      delete_label.frame = frameRect
+    end
+  end
+
+  def complete_right_swipe_cue(label)
+    if self.frame.origin.x >= UI_CUES_WIDTH2 * 3
+      frameRect = label.frame
+      frameRect.origin.x = self.frame.origin.x - label.frame.size.width - self.frame.origin.x
+      label.frame = frameRect
+    end
+  end
+
+  def complete_left_swipe_cue(label)
+    if self.frame.origin.x <= -UI_CUES_WIDTH2 * 3
+      frameRect = label.frame
+      frameRect.origin.x = self.frame.origin.x + label.frame.size.width - self.frame.origin.x
+      puts self.frame.origin.x
+      label.frame = frameRect
+    end
+  end
+
+  def state_ended(pan_gesture)
+    if pan_gesture.state == UIGestureRecognizerStateEnded
       # the frame this cell would have had before being dragged
       original_frame = CGRectMake(0, self.frame.origin.y, self.bounds.size.width, self.bounds.size.height)
       
       # notify the delegate that this item should be deleted when true
       if gesture.delete_on_drag_release
         table_view_cell_delegate.decision_deleted(decision)
+      # render the strikethrough and show completed layer. Snap the cell back to starting point with animation
+      elsif gesture.open_on_drag_release
+        table_view_cell_delegate.open_decision(decision)
       else 
         # if the item is not being deleted, snap back to the original location
-        UIView.animateWithDuration(0.2, animations: proc { self.frame = original_frame })
+        UIView.animateWithDuration(0.2, 
+          delay: 0.0, 
+          options: UIViewAnimationOptionCurveEaseOut,
+          animations: proc { self.frame = original_frame },
+          completion: proc { |view| table_view_cell_delegate.table_view.reloadData if self.frame = original_frame }
+        )
       end
     end
   end
@@ -151,10 +242,11 @@ class MainTableViewCell < UITableViewCell
   # delgate method of a gesture recognizer - UIPanGestureRecognizer in this case
   # asks the delegate if a gesture recognizer should begin interpreting touches.
   def gestureRecognizerShouldBegin(gesture_recognizer)
-    translation = gesture_recognizer.translationInView(self.superview)
-    
-    return true if translation.x.abs > translation.y.abs
-    false
+    if gesture_recognizer.class == UIPanGestureRecognizer
+      translation = gesture_recognizer.translationInView(self.superview)
+      return true if translation.x.abs > translation.y.abs
+      false
+    end
   end
   
   #############################

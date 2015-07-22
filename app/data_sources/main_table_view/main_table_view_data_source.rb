@@ -16,7 +16,7 @@ module MainTableViewDataSource
       decision = decisions_ordered.all[indexPath.row]
       cell.selectionStyle = UITableViewCellSelectionStyleNone
       cell.textLabel.backgroundColor = UIColor.clearColor
-      
+
       # allows custom_table_view_cell to pass message to this view controller
       # todo_item_deleted is called to delete a row
       cell.table_view_cell_delegate = self
@@ -25,6 +25,10 @@ module MainTableViewDataSource
       cell.decision = decision
     end
   end
+
+  #def tableView(tableView, didSelectRowAtIndexPath: indexPath)
+  #  performSegueWithIdentifier(see_decision, sender: sender)
+  #end
   
   def tableView(table_view, heightForRowAtIndexPath: indexPath)
     table_view.rowHeight
@@ -32,6 +36,10 @@ module MainTableViewDataSource
   
   def decisions_ordered
     @decisions_ordered ||= Decision.sort_by(:created_at, order: :descending)
+  end
+
+  def handle_long_press(long_press)
+    puts "long"
   end
   
 end

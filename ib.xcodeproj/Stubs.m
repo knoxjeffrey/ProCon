@@ -9,6 +9,9 @@
 @implementation MainTableViewCell
 @end
 
+@implementation DecisionViewController
+@end
+
 @implementation MainViewController
 @end
 
