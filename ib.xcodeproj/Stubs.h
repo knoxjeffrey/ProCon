@@ -15,16 +15,20 @@
 @interface MainTableViewCell: UITableViewCell
 -(IBAction) layoutSubviews;
 -(IBAction) decision;
--(IBAction) render_label;
--(IBAction) cross_label;
+-(IBAction) render_text_field;
+-(IBAction) open_label;
+-(IBAction) delete_label;
 -(IBAction) create_cue_label;
 -(IBAction) gradient_layer;
 -(IBAction) colors;
--(IBAction) recognizer;
--(IBAction) handle_pan:(id) recognizer;
--(IBAction) state_began:(id) recognizer;
--(IBAction) state_changed:(id) recognizer;
--(IBAction) state_ended:(id) recognizer;
+-(IBAction) pan_gesture;
+-(IBAction) handle_pan:(id) pan_gesture;
+-(IBAction) state_began:(id) pan_gesture;
+-(IBAction) state_changed:(id) pan_gesture;
+-(IBAction) initial_swipe_cue:(id) label;
+-(IBAction) final_swipe_cue:(id) label;
+-(IBAction) complete_swipe_cue:(id) label;
+-(IBAction) state_ended:(id) pan_gesture;
 -(IBAction) gestureRecognizerShouldBegin:(id) gesture_recognizer;
 -(IBAction) textFieldShouldReturn:(id) text_field;
 -(IBAction) textFieldShouldBeginEditing:(id) text_field;
@@ -33,11 +37,15 @@
 
 @end
 
+@interface DecisionViewController: UIViewController
+@end
+
 @interface MainViewController: UIViewController
 
 @property IBOutlet UITableView * table_view;
 
 -(IBAction) viewDidLoad;
+-(IBAction) open_decision:(id) decision;
 -(IBAction) decision_deleted:(id) decision;
 -(IBAction) new_decision_added;
 

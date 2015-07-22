@@ -14,24 +14,10 @@ module UIScrollViewDelegate
   end
   
   def scrollViewDidScroll(scroll_view)
-    pulldown.placeholder_cell.backgroundColor = UIColor.redColor
-    pulldown.pull_down_in_progress = scroll_view.contentOffset.y <= 0.0
-    
     # add the placeholder
-    table_view_reference.insertSubview(pulldown.placeholder_cell, atIndex: 0)  if pulldown.pull_down_in_progress 
-    
-    scroll_view_content_offset_Y = scroll_view.contentOffset.y
-
-    if pulldown.pull_down_in_progress && scroll_view.contentOffset.y <= 0.0 
-      # maintain the location of the placeholder
-      pulldown.placeholder_cell.frame = CGRectMake(0, -table_view_reference.rowHeight,
-          table_view_reference.frame.size.width, table_view_reference.rowHeight)
-      pulldown.placeholder_cell.render_label.text = -scroll_view_content_offset_Y > table_view_reference.rowHeight ?
-          "Release to add item" : "Pull to add item"
-      pulldown.placeholder_cell.alpha = [1.0, -scroll_view_content_offset_Y / table_view_reference.rowHeight].min
-    else 
-      pulldown.pull_down_in_progress = false
-      pulldown.placeholder_cell.removeFromSuperview
+    if pull_down_is_in_progress?(scroll_view) && scroll_view.contentOffset.y <= 0.0 
+      create_placeholder(scroll_view.contentOffset.y)
+      table_view_reference.insertSubview(pulldown.placeholder_cell, atIndex: 0) 
     end
   end
   
@@ -40,6 +26,27 @@ module UIScrollViewDelegate
     if pulldown.pull_down_in_progress && -scroll_view.contentOffset.y > table_view_reference.rowHeight
       self.performSelector("new_decision_added", withObject: nil, afterDelay: 0.3)
     end
+  end
+
+  # remove placeholder when scroll view stops moving
+  def scrollViewDidEndDecelerating(scroll_view)
+    pulldown.placeholder_cell.removeFromSuperview
+  end
+
+  def create_placeholder(scroll_view_content_offset_y)
+    # maintain the location of the placeholder
+    pulldown.placeholder_cell.frame = CGRectMake(0, -table_view_reference.rowHeight,
+        table_view_reference.frame.size.width, table_view_reference.rowHeight)
+
+    pulldown.placeholder_cell.render_text_field.text = -scroll_view_content_offset_y > table_view_reference.rowHeight ?
+        "Release to add item" : "Pull to add item"
+
+    pulldown.placeholder_cell.alpha = [1.0, -scroll_view_content_offset_y / table_view_reference.rowHeight].min
+    pulldown.placeholder_cell.backgroundColor = UIColor.redColor
+  end
+
+  def pull_down_is_in_progress?(scroll_view)
+    pulldown.pull_down_in_progress = scroll_view.contentOffset.y <= 0.0
   end
   
   def table_view_reference
