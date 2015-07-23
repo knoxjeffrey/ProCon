@@ -48,28 +48,49 @@ class DecisionViewController < UIViewController
   end
 
   def number_of_menu_items
-    3
+    2
   end
 
   def image_for_item_at_index(index)
 
     image_name = nil
     case index 
-      when 0
-        image_name = "facebook-white"
-      when 1
-        image_name = "twitter-white"
-      when 2
-        image_name = "google-plus-white"
-      when 3
-        image_name = "linkedin-white"
-      when 4
-        image_name = "pinterest-white"
-      else
-        image_name = "facebook-white"
+    when 0
+      image_name = "facebook-white"
+    when 1
+      image_name = "twitter-white"
+    when 2
+      image_name = "google-plus-white"
+    when 3
+      image_name = "linkedin-white"
+    when 4
+      image_name = "pinterest-white"
+    else
+      image_name = "facebook-white"
     end
 
     UIImage.imageNamed(image_name).CGImage
+  end
+
+ def did_select_item_at_index_with_point(selected_index, point)
+
+    image_name = nil
+    case selected_index
+    when 0
+      msg = "Facebook Selected"
+    when 1
+      msg = "Twitter Selected"
+    when 2
+      msg = "Google Plus Selected"
+    when 3
+      msg = "Linkedin Selected"
+    when 4
+      msg = "Pinterest Selected"
+    end
+    
+    alert_view = UIAlertView.alloc.initWithTitle(nil, message: msg, delegate: nil, cancelButtonTitle: "OK", otherButtonTitles: nil)
+    alert_view.show
+
   end
 
 

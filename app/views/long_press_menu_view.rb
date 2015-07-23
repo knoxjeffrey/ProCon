@@ -2,7 +2,8 @@ class LongPressMenuView < UIView
 
 	MenuAttributes = Struct.new(:menu_items, :item_locations, :item_bg_color, :item_bg_highlighted_color, :prev_index, :long_press_location, :is_showing, :is_paning, :current_location, :arc_angle, :radius, :angle_between_items)
 
-	LocationInfo = Struct.new(:position, :angle)
+	#LocationInfo = Struct.new(:position, :angle)
+	LocationInfo = Struct.new(:position)
 
 	MAIN_ITEM_SIZE = 44
 	MENU_ITEM_SIZE = 40
@@ -28,7 +29,92 @@ class LongPressMenuView < UIView
 	  end
 	end
 
+	def touchesBegan(touches, withEvent: event)
+    menu_at_point = CGPointZero
+
+    if touches.count == 1
+
+    	touch = touches.anyObject
+      touch_point = touch.locationInView(self)
+
+      menu_item_index = self.index_of_closest_match_at_point(touch_point)
+
+      if menu_attributes.prev_index > -1
+      	menu_at_point = menu_attributes.menu_items[menu_item_index].position
+      end
+
+      if menu_attributes.prev_index >= 0 && menu_attributes.prev_index != menu_attributes.prev_index
+      	self.reset_previous_selection
+      end
+
+      menu_attributes.prev_index = menu_item_index
+    end
+
+    self.dismissWithSelectedIndexForMenuAtPoint(menu_at_point)
+  end
+
+	def index_of_closest_match_at_point(point)
+		menu_attributes.menu_items.each_with_index do |menu_item, index|
+			if CGRectContainsPoint(menu_item.frame, point)
+      	puts "Touched Layer at index: #{index}"
+      	return index
+      end
+		end
+
+		return -1
+	end
+	
+	def reset_previous_selection
+	  if menu_attributes.prev_index >= 0
+	    layer = menu_attributes.menu_items[menu_attributes.prev_index]
+	    item_location = menu_attributes.item_locations[menu_attributes.prev_index]
+	    layer.position = item_location.position
+	    layer.backgroundColor = menu_attributes.item_bg_color
+	    layer.transform = CATransform3DIdentity
+	    menu_attributes.prev_index = -1
+	  end
+	end
+
 	def highlight_menu_item_for_point
+		if menu_attributes.is_showing && menu_attributes.is_paning
+        
+      close_to_index = -1
+
+      menu_attributes.menu_items.each_with_index do |menu_item, index|
+        item_location = menu_attributes.item_locations[index]
+
+        if menu_attributes.current_location.x >= item_location.position.x - MAIN_ITEM_SIZE / 2 && 
+        	menu_attributes.current_location.x <= item_location.position.x + MAIN_ITEM_SIZE / 2
+	          close_to_index = index
+	          break
+        end
+      end
+
+      if close_to_index >= 0 && close_to_index < menu_attributes.menu_items.count
+      	item_location = menu_attributes.item_locations[close_to_index]
+
+      	layer = menu_attributes.menu_items[close_to_index]
+        layer.backgroundColor = menu_attributes.item_bg_highlighted_color
+
+        scale_factor = 1.3
+        scale_transform =  CATransform3DScale(CATransform3DIdentity, scale_factor, scale_factor, 1.0)
+
+        y_trans = Math.sin(item_location.position.y)
+                
+	      translate = CATransform3DTranslate(scale_transform, 0, 10 * scale_factor * y_trans, 0)
+	      layer.transform = translate
+	      
+	      if menu_attributes.prev_index >= 0 && menu_attributes.prev_index != close_to_index
+	      	self.reset_previous_selection
+	      end
+	      
+	      menu_attributes.prev_index = close_to_index
+
+	    else
+      	self.reset_previous_selection
+      end
+
+    end
 
 	end
 
@@ -148,7 +234,7 @@ class LongPressMenuView < UIView
 
 	def layout_menu_items
 		menu_attributes.item_locations.clear
-    
+=begin    
     item_size = CGSizeMake(MENU_ITEM_SIZE, MENU_ITEM_SIZE)
     item_radius = Math.sqrt((item_size.width ** 2) + (item_size.height ** 2)) / 2
     menu_attributes.arc_angle = ((item_radius * menu_attributes.menu_items.count) / menu_attributes.radius) * 1.5
@@ -175,9 +261,26 @@ class LongPressMenuView < UIView
 
       i += 1
     end
+=end
+		
+		i = 0
+    while i < menu_attributes.menu_items.count
+	    used_screen_width = CGRectGetWidth(self.window.screen.bounds)
+	    menu_spacing = (used_screen_width / 4) * (i + (i + 1))
+	    item_center = CGPointMake(menu_spacing, 75)
+	    
+	    location_info = LocationInfo.new(item_center)
+	    
+	    menu_attributes.item_locations.addObject(location_info)
+	    
+	    layer = menu_attributes.menu_items[i]
+	    layer.transform = CATransform3DIdentity
 
+	    i += 1
+    end
 	end
 
+=begin
 	def location_for_item_at_index(index)
 		item_angle = self.item_angle_at_index(index)
 	
@@ -185,11 +288,8 @@ class LongPressMenuView < UIView
 									 menu_attributes.long_press_location.y + Math.sin(item_angle) * menu_attributes.radius)
 		
 		@location_info = LocationInfo.new(item_center, item_angle)
-    #location = GHMenuItemLocation.new
-    #location.position = item_center
-    #location.angle = item_angle
-    #location
 	end
+
 
 	def item_angle_at_index(index)
 		bearing_radians = angle_between_starting_and_ending_point(menu_attributes.long_press_location, self.center) 
@@ -207,6 +307,7 @@ class LongPressMenuView < UIView
     item_angle
 	end
 
+
 	def angle_between_starting_and_ending_point(starting_point, ending_point)
 		origin_point = CGPointMake(ending_point.x - starting_point.x, ending_point.y - starting_point.y)
     bearing_radians = Math.atan2(origin_point.y, origin_point.x)
@@ -215,12 +316,18 @@ class LongPressMenuView < UIView
 
     bearing_radians
 	end
+=end
 
 	def dismiss_with_selected_index_for_menu_at_point(point)
-		#if self.delegate && [self.delegate respondsToSelector:@selector(didSelectItemAtIndex: forMenuAtPoint:)] && self.prevIndex >= 0){
-     #   [self.delegate didSelectItemAtIndex:self.prevIndex forMenuAtPoint:point];
-     #   self.prevIndex = -1;
-   # }
+		puts self.delegate
+		puts self.delegate.respondsToSelector("did_select_item_at_index_with_point::") 
+		puts menu_attributes.prev_index >= 0
+
+		#if self.delegate && self.delegate.respondsToSelector("did_select_item_at_index_with_point") && menu_attributes.prev_index >= 0
+			puts "i'm in"
+			self.delegate.did_select_item_at_index_with_point(menu_attributes.prev_index, point)
+			menu_attributes.prev_index = -1
+   	#end
 
     self.hide_menu
 	end
