@@ -42,7 +42,7 @@ module DecisionUIScrollViewDelegate
         "Release to go back" : "Pull to go back"
 
     pulldown.placeholder_cell.alpha = [1.0, -scroll_view_content_offset_y / table_view_reference.rowHeight].min
-    pulldown.placeholder_cell.backgroundColor = UIColor.blackColor
+    pulldown.placeholder_cell.backgroundColor = UIColor.clearColor
     pulldown.placeholder_cell.textColor = UIColor.whiteColor
     pulldown.placeholder_cell.textAlignment = NSTextAlignmentCenter
   end

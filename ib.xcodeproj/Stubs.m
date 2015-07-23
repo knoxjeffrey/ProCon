@@ -24,3 +24,6 @@
 @implementation Pro
 @end
 
+@implementation LongPressMenuView
+@end
+

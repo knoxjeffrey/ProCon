@@ -18,5 +18,6 @@ Motion::Project::App.setup do |app|
   app.interface_orientations = [:portrait]
   
   app.info_plist['UIViewControllerBasedStatusBarAppearance'] = false
+  
 end
 task :"build:simulator" => :"schema:build"

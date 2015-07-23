@@ -37,9 +37,5 @@ module MainTableViewDataSource
   def decisions_ordered
     @decisions_ordered ||= Decision.sort_by(:created_at, order: :descending)
   end
-
-  def handle_long_press(long_press)
-    puts "long"
-  end
   
 end

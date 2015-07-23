@@ -45,7 +45,6 @@
 
 -(IBAction) viewDidLoad;
 -(IBAction) decision_object:(id) decision;
--(IBAction) decisions_ordered;
 -(IBAction) go_back;
 
 @end
@@ -68,5 +67,12 @@
 @end
 
 @interface Pro: CDQManagedObject
+@end
+
+@interface LongPressMenuView: UIView
+-(IBAction) init;
+-(IBAction) highlight_menu_item_for_point;
+-(IBAction) handle_long_press;
+
 @end
 
