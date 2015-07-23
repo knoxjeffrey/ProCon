@@ -27,3 +27,6 @@
 @implementation LongPressMenuView
 @end
 
+@implementation NSObject
+@end
+

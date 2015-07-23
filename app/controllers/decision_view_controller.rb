@@ -21,11 +21,6 @@ class DecisionViewController < UIViewController
     decision_table_view.backgroundColor = UIColor.clearColor
     decision_table_view.rowHeight = 70.0
 
-    #overlay = LongPressMenuView.alloc.init
-    #overlay.dataSource = self
-    #overlay.delegate = self
-    # looks for long press action on screen and calls handle_long_press
-    
     decision_table_view.addGestureRecognizer(long_press_gesture)
   end
 
@@ -36,7 +31,10 @@ class DecisionViewController < UIViewController
   end
 
   def overlay
-  	@overlay ||= LongPressMenuView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+  	@overlay ||= LongPressMenuView.alloc.initWithFrame(UIScreen.mainScreen.bounds).tap do |overlay|
+      overlay.data_source = self
+      overlay.delegate = self
+    end
   end
 
   # method called by segue
@@ -48,5 +46,31 @@ class DecisionViewController < UIViewController
   def go_back
   	self.performSegueWithIdentifier("unwind_decision_segue", sender: self)
   end
+
+  def number_of_menu_items
+    3
+  end
+
+  def image_for_item_at_index(index)
+
+    image_name = nil
+    case index 
+      when 0
+        image_name = "facebook-white"
+      when 1
+        image_name = "twitter-white"
+      when 2
+        image_name = "google-plus-white"
+      when 3
+        image_name = "linkedin-white"
+      when 4
+        image_name = "pinterest-white"
+      else
+        image_name = "facebook-white"
+    end
+
+    UIImage.imageNamed(image_name).CGImage
+  end
+
 
 end

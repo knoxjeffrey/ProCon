@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreData/CoreData.h>
+#import <QuartzCore/QuartzCore.h>
 
 @interface AppDelegate: UIResponder <UIApplicationDelegate>
 -(IBAction) window;
@@ -44,8 +45,12 @@
 @property IBOutlet UITableView * decision_table_view;
 
 -(IBAction) viewDidLoad;
+-(IBAction) long_press_gesture;
+-(IBAction) overlay;
 -(IBAction) decision_object:(id) decision;
 -(IBAction) go_back;
+-(IBAction) number_of_menu_items;
+-(IBAction) image_for_item_at_index:(id) index;
 
 @end
 
@@ -70,9 +75,21 @@
 @end
 
 @interface LongPressMenuView: UIView
--(IBAction) init;
+-(IBAction) initWithFrame:(id) frame;
 -(IBAction) highlight_menu_item_for_point;
--(IBAction) handle_long_press;
+-(IBAction) data_source;
+-(IBAction) reload_data;
+-(IBAction) layer_with_image:(id) image;
+-(IBAction) handle_long_press:(id) gesture_recognizer;
+-(IBAction) animate_menu;
+-(IBAction) layout_menu_items;
+-(IBAction) location_for_item_at_index:(id) index;
+-(IBAction) item_angle_at_index:(id) index;
+-(IBAction) dismiss_with_selected_index_for_menu_at_point:(id) point;
+-(IBAction) hide_menu;
 
+@end
+
+@interface NSObject: NSObject
 @end
 
