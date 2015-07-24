@@ -77,14 +77,14 @@
 @interface LongPressMenuView: UIView
 -(IBAction) initWithFrame:(id) frame;
 -(IBAction) highlight_menu_item_for_point;
+-(IBAction) reset_previous_selection;
 -(IBAction) data_source;
 -(IBAction) reload_data;
 -(IBAction) layer_with_image:(id) image;
 -(IBAction) handle_long_press:(id) gesture_recognizer;
 -(IBAction) animate_menu;
+-(IBAction) animationDidStart:(id) anim;
 -(IBAction) layout_menu_items;
--(IBAction) location_for_item_at_index:(id) index;
--(IBAction) item_angle_at_index:(id) index;
 -(IBAction) dismiss_with_selected_index_for_menu_at_point:(id) point;
 -(IBAction) hide_menu;
 

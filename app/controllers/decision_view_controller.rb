@@ -25,9 +25,7 @@ class DecisionViewController < UIViewController
   end
 
   def long_press_gesture
-    @long_press_gesture = UILongPressGestureRecognizer.alloc.initWithTarget(overlay, action: "handle_long_press:").tap do |long_press_gesture|
-      long_press_gesture.delegate = self
-    end
+    @long_press_gesture ||= UILongPressGestureRecognizer.alloc.initWithTarget(overlay, action: "handle_long_press:")
   end
 
   def overlay
@@ -86,6 +84,8 @@ class DecisionViewController < UIViewController
       msg = "Linkedin Selected"
     when 4
       msg = "Pinterest Selected"
+    else
+      return
     end
     
     alert_view = UIAlertView.alloc.initWithTitle(nil, message: msg, delegate: nil, cancelButtonTitle: "OK", otherButtonTitles: nil)
