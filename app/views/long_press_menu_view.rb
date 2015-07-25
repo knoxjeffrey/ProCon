@@ -1,6 +1,6 @@
 class LongPressMenuView < UIView
 
-	MenuAttributes = Struct.new(:menu_items, :item_locations, :item_bg_color, :item_bg_highlighted_color, :prev_index, :long_press_location, :is_showing, :is_paning, :current_location, :arc_angle, :radius, :angle_between_items)
+	MenuAttributes = Struct.new(:menu_items, :item_locations, :item_bg_color, :green_item_bg_highlighted_color, :red_item_bg_highlighted_color, :prev_index, :long_press_location, :is_showing, :is_paning, :current_location, :arc_angle, :radius, :angle_between_items)
 
 	LocationInfo = Struct.new(:position)
 
@@ -17,14 +17,10 @@ class LongPressMenuView < UIView
 
 	def initWithFrame(frame)
 		super.tap do
-	  	# Initialization code
-	    self.userInteractionEnabled = true
-	    self.backgroundColor = UIColor.clearColor
-
 	    display_link = CADisplayLink.displayLinkWithTarget(self, selector: "highlight_menu_item_for_point")
 	    display_link.addToRunLoop(NSRunLoop.mainRunLoop, forMode: NSDefaultRunLoopMode)
 
-	    @menu_attributes = MenuAttributes.new([], [], UIColor.grayColor.CGColor, UIColor.redColor.CGColor, -1, nil, false, false, CGPoint, Math::PI / 2, 90, 0)
+	    @menu_attributes = MenuAttributes.new([], [], UIColor.grayColor.CGColor, UIColor.greenColor.CGColor, UIColor.redColor.CGColor, -1, nil, false, false, CGPoint, Math::PI / 2, 90, 0)
 	  end
 
 	end
@@ -47,7 +43,11 @@ class LongPressMenuView < UIView
       	item_location = menu_attributes.item_locations[close_to_index]
 
       	layer = menu_attributes.menu_items[close_to_index]
-        layer.backgroundColor = menu_attributes.item_bg_highlighted_color
+        if close_to_index == 0
+          layer.backgroundColor = menu_attributes.green_item_bg_highlighted_color
+        else
+          layer.backgroundColor = menu_attributes.red_item_bg_highlighted_color
+        end
 
         scale_factor = 1.3
         scale_transform =  CATransform3DScale(CATransform3DIdentity, scale_factor, scale_factor, 1.0)

@@ -34,13 +34,12 @@ module MainTableViewCellDelegate
           cell.alpha = 1.0 if cell != editing_cell
           self.performSelector("reload_table_after_edit", 
             withObject: nil, 
-            afterDelay: 0.3)  
+            afterDelay: 0.4)  
         }
       )
     end
     
-    return decision_deleted(editing_cell.decision) if 
-      editing_cell.decision.title == ""
+    return decision_deleted(editing_cell.decision) if editing_cell.decision.title == ""
   end
   
   def reload_table_after_edit

@@ -43,6 +43,7 @@ module UIScrollViewDelegate
 
     pulldown.placeholder_cell.alpha = [1.0, -scroll_view_content_offset_y / table_view_reference.rowHeight].min
     pulldown.placeholder_cell.backgroundColor = UIColor.redColor
+    pulldown.placeholder_cell.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
   end
 
   def pull_down_is_in_progress?(scroll_view)

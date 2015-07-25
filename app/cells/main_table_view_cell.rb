@@ -60,8 +60,8 @@ class MainTableViewCell < UITableViewCell
   def render_text_field
     @render_text_field ||= UITextField.alloc.initWithFrame(CGRectNull).tap do |render_text_field|
       render_text_field.textColor = UIColor.whiteColor
-      render_text_field.font = UIFont.boldSystemFontOfSize(16)
       render_text_field.backgroundColor = UIColor.clearColor
+      render_text_field.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
     end
   end
 
@@ -74,7 +74,7 @@ class MainTableViewCell < UITableViewCell
       open_label.attributedText = NSAttributedString.alloc.initWithString("Open", attributes: text_attributes)
 
       open_label.textAlignment = NSTextAlignmentRight
-      open_label.font = UIFont.boldSystemFontOfSize(14)
+      open_label.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
       open_label.backgroundColor = UIColor.blueColor
     end
   end
@@ -88,7 +88,7 @@ class MainTableViewCell < UITableViewCell
       delete_label.attributedText = NSAttributedString.alloc.initWithString("Delete", attributes: text_attributes)
 
       delete_label.textAlignment = NSTextAlignmentLeft
-      delete_label.font = UIFont.boldSystemFontOfSize(14)
+      delete_label.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
       delete_label.backgroundColor = UIColor.redColor
     end
   end

@@ -54,17 +54,9 @@ class DecisionViewController < UIViewController
     image_name = nil
     case index 
     when 0
-      image_name = "facebook-white"
+      image_name = "add"
     when 1
-      image_name = "twitter-white"
-    when 2
-      image_name = "google-plus-white"
-    when 3
-      image_name = "linkedin-white"
-    when 4
-      image_name = "pinterest-white"
-    else
-      image_name = "facebook-white"
+      image_name = "remove"
     end
 
     UIImage.imageNamed(image_name).CGImage
@@ -75,15 +67,9 @@ class DecisionViewController < UIViewController
     image_name = nil
     case selected_index
     when 0
-      msg = "Facebook Selected"
+      msg = "Pros Selected"
     when 1
-      msg = "Twitter Selected"
-    when 2
-      msg = "Google Plus Selected"
-    when 3
-      msg = "Linkedin Selected"
-    when 4
-      msg = "Pinterest Selected"
+      msg = "Cons Selected"
     else
       return
     end
