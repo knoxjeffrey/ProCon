@@ -14,11 +14,12 @@ module DecisionTableViewDataSource
     cell = table_view.dequeueReusableCellWithIdentifier(NAVIGATION_CELL_ID, forIndexPath: indexPath).tap do |cell|
 
       cell.selectionStyle = UITableViewCellSelectionStyleNone
+      cell.table_view_cell_delegate = self
     end
   end
   
   def tableView(table_view, heightForRowAtIndexPath: indexPath)
-    table_view.rowHeight
+    decision_table_view.rowHeight
   end
   
 end

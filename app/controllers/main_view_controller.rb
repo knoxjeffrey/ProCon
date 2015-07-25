@@ -15,7 +15,7 @@ class MainViewController < UIViewController
     table_view.registerClass(MainTableViewCell.self, forCellReuseIdentifier: TODO_CELL_ID)
     table_view.separatorStyle = UITableViewCellSeparatorStyleNone
     table_view.backgroundColor = UIColor.blackColor
-    table_view.rowHeight = 60.0
+    table_view.rowHeight = UIScreen.mainScreen.bounds.size.height / 10
     # Very important. Without this the placeholder from UIScrollViewDelegate does not appear if the first action is a swipe to delete
     pulldown
   end

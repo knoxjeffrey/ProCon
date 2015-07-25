@@ -4,8 +4,8 @@ class LongPressMenuView < UIView
 
 	LocationInfo = Struct.new(:position)
 
-	MAIN_ITEM_SIZE = 44
-	MENU_ITEM_SIZE = 40
+	MAIN_ITEM_SIZE = UIScreen.mainScreen.bounds.size.width / 6
+	MENU_ITEM_SIZE = MAIN_ITEM_SIZE * 0.9
 	BORDER_WIDTH  = 5
 
 	ANIMATION_DURATION = 0.2
@@ -45,8 +45,10 @@ class LongPressMenuView < UIView
       	layer = menu_attributes.menu_items[close_to_index]
         if close_to_index == 0
           layer.backgroundColor = menu_attributes.green_item_bg_highlighted_color
+          self.delegate.background_color_for_index(close_to_index)
         else
           layer.backgroundColor = menu_attributes.red_item_bg_highlighted_color
+          self.delegate.background_color_for_index(close_to_index)
         end
 
         scale_factor = 1.3
@@ -79,6 +81,7 @@ class LongPressMenuView < UIView
 	    layer.backgroundColor = menu_attributes.item_bg_color
 	    layer.transform = CATransform3DIdentity
 	    menu_attributes.prev_index = -1
+      self.delegate.background_color_for_index(menu_attributes.prev_index)
 	  end
 	end
 
@@ -216,7 +219,7 @@ class LongPressMenuView < UIView
     while i < menu_attributes.menu_items.count
 	    used_screen_width = CGRectGetWidth(self.window.screen.bounds)
 	    menu_spacing = (used_screen_width / 4) * (i + (i + 1))
-	    item_center = CGPointMake(menu_spacing, 75)
+	    item_center = CGPointMake(menu_spacing, UIScreen.mainScreen.bounds.size.height / 6 )
 	    
 	    @location_info = LocationInfo.new(item_center)
 	    
@@ -233,6 +236,7 @@ class LongPressMenuView < UIView
 		if self.delegate && menu_attributes.prev_index >= 0
 			self.delegate.did_select_item_at_index_with_point(menu_attributes.prev_index, point)
 			menu_attributes.prev_index = -1
+      self.delegate.background_color_for_index(menu_attributes.prev_index)
    	end
 
     self.hide_menu

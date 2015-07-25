@@ -19,7 +19,7 @@ class DecisionViewController < UIViewController
     decision_table_view.registerClass(UITableViewCell, forCellReuseIdentifier: NAVIGATION_CELL_ID)
     decision_table_view.separatorStyle = UITableViewCellSeparatorStyleNone
     decision_table_view.backgroundColor = UIColor.clearColor
-    decision_table_view.rowHeight = 70.0
+    decision_table_view.rowHeight = UIScreen.mainScreen.bounds.size.height / 10
 
     decision_table_view.addGestureRecognizer(long_press_gesture)
   end
@@ -54,9 +54,9 @@ class DecisionViewController < UIViewController
     image_name = nil
     case index 
     when 0
-      image_name = "add"
+      image_name = "thumbs_up"
     when 1
-      image_name = "remove"
+      image_name = "thumbs_down"
     end
 
     UIImage.imageNamed(image_name).CGImage
@@ -77,6 +77,19 @@ class DecisionViewController < UIViewController
     alert_view = UIAlertView.alloc.initWithTitle(nil, message: msg, delegate: nil, cancelButtonTitle: "OK", otherButtonTitles: nil)
     alert_view.show
 
+  end
+
+  def background_color_for_index(index)
+    color = nil
+    case index
+    when 0
+      color = UIColor.greenColor
+    when 1
+      color = UIColor.redColor
+    else
+      color = UIColor.blackColor
+    end
+    self.view.backgroundColor = color
   end
 
 

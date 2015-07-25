@@ -38,14 +38,35 @@ module DecisionUIScrollViewDelegate
     pulldown.placeholder_cell.frame = CGRectMake(0, -table_view_reference.rowHeight,
         table_view_reference.frame.size.width, table_view_reference.rowHeight)
 
-    pulldown.placeholder_cell.text = -scroll_view_content_offset_y > table_view_reference.rowHeight ?
-        "Release to go back" : "Pull to go back"
+    pulldown.placeholder_cell.addSubview(render_text_field)
+    render_text_field.frame = CGRectMake((table_view_reference.frame.size.width/4), 0,
+        (table_view_reference.frame.size.width/4) * 2, table_view_reference.rowHeight)
+
+    new_cell_cue_image = UIImageView.alloc.initWithFrame(CGRectMake(0, 0, 25, 25))
+ 
+    if -scroll_view_content_offset_y > table_view_reference.rowHeight
+      new_cell_cue_image.setImage(UIImage.imageNamed('drag'))
+      render_text_field.text = "Release to go back"
+    else
+      new_cell_cue_image.setImage(UIImage.imageNamed('drag_down'))
+      render_text_field.text = "Pull down to go back"
+    end
+
+    render_text_field.leftView = new_cell_cue_image
+    render_text_field.leftViewMode = UITextFieldViewModeAlways
+    render_text_field.addSubview(new_cell_cue_image)
 
     pulldown.placeholder_cell.alpha = [1.0, -scroll_view_content_offset_y / table_view_reference.rowHeight].min
     pulldown.placeholder_cell.backgroundColor = UIColor.clearColor
-    pulldown.placeholder_cell.textColor = UIColor.whiteColor
-    pulldown.placeholder_cell.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
-    pulldown.placeholder_cell.textAlignment = NSTextAlignmentCenter
+  end
+
+  def render_text_field
+    @render_text_field ||= UITextField.alloc.initWithFrame(CGRectNull).tap do |render_text_field|
+      render_text_field.textColor = UIColor.whiteColor
+      render_text_field.backgroundColor = UIColor.clearColor
+      render_text_field.font = UIFont.fontWithName("HelveticaNeue", size: 14.0)
+      render_text_field.textAlignment = NSTextAlignmentRight
+    end
   end
 
   def pull_down_is_in_progress?(scroll_view)

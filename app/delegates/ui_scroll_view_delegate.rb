@@ -38,8 +38,19 @@ module UIScrollViewDelegate
     pulldown.placeholder_cell.frame = CGRectMake(0, -table_view_reference.rowHeight,
         table_view_reference.frame.size.width, table_view_reference.rowHeight)
 
-    pulldown.placeholder_cell.render_text_field.text = -scroll_view_content_offset_y > table_view_reference.rowHeight ?
-        "Release to add item" : "Pull to add item"
+    new_cell_cue_image = UIImageView.alloc.initWithFrame(CGRectMake(0, 0, 25, 25))
+ 
+    if -scroll_view_content_offset_y > table_view_reference.rowHeight
+      new_cell_cue_image.setImage(UIImage.imageNamed('drag'))
+      pulldown.placeholder_cell.render_text_field.text = "  Release to add item"
+    else
+      new_cell_cue_image.setImage(UIImage.imageNamed('drag_down'))
+      pulldown.placeholder_cell.render_text_field.text = "  Pull down to add item"
+    end
+
+    pulldown.placeholder_cell.render_text_field.leftView = new_cell_cue_image
+    pulldown.placeholder_cell.render_text_field.leftViewMode = UITextFieldViewModeAlways
+    pulldown.placeholder_cell.render_text_field.addSubview(new_cell_cue_image)
 
     pulldown.placeholder_cell.alpha = [1.0, -scroll_view_content_offset_y / table_view_reference.rowHeight].min
     pulldown.placeholder_cell.backgroundColor = UIColor.redColor
