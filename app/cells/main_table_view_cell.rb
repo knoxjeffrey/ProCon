@@ -12,10 +12,10 @@ class MainTableViewCell < UITableViewCell
   
   def initWithStyle(style, reuseIdentifier: reuseIdentifier)
     super
-    render_text_field.delegate = self
+    render_text_view.delegate = self
     self.addSubview(delete_label)
     self.addSubview(open_label)
-    self.addSubview(render_text_field)
+    self.addSubview(render_text_view)
     
     # remove the default blue highlight for selected cells
     self.selectionStyle = UITableViewCellSelectionStyleNone
@@ -38,7 +38,7 @@ class MainTableViewCell < UITableViewCell
     #ensure the gradient layers occupies the full bounds
     gradient_layer.frame = self.bounds
     
-    render_text_field.frame = CGRectMake(LABEL_LEFT_MARGIN, 0,
+    render_text_view.frame = CGRectMake(LABEL_LEFT_MARGIN, 0,
                                     self.bounds.size.width - LABEL_LEFT_MARGIN,self.bounds.size.height)
 
     open_label.frame = CGRectMake(-self.bounds.size.width,
@@ -52,16 +52,16 @@ class MainTableViewCell < UITableViewCell
     @decision = decision
     
     #we must update all the visual state associated with the model item
-    render_text_field.text = decision.title
+    render_text_view.text = decision.title
   end
   
   # create a text field that renders the decision title text
-  def render_text_field
-    @render_text_field ||= UITextView.alloc.initWithFrame(CGRectNull).tap do |render_text_field|
-      render_text_field.textColor = UIColor.whiteColor
-      render_text_field.backgroundColor = UIColor.clearColor
-      render_text_field.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
-      render_text_field.returnKeyType = UIReturnKeyDone
+  def render_text_view
+    @render_text_view ||= UITextView.alloc.initWithFrame(CGRectNull).tap do |render_text_view|
+      render_text_view.textColor = UIColor.whiteColor
+      render_text_view.backgroundColor = UIColor.clearColor
+      render_text_view.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
+      render_text_view.returnKeyType = UIReturnKeyDone
     end
   end
 
