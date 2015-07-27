@@ -13,7 +13,6 @@ class MainTableViewCell < UITableViewCell
   def initWithStyle(style, reuseIdentifier: reuseIdentifier)
     super
     render_text_field.delegate = self
-    render_text_field.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter
     self.addSubview(delete_label)
     self.addSubview(open_label)
     self.addSubview(render_text_field)
@@ -58,10 +57,11 @@ class MainTableViewCell < UITableViewCell
   
   # create a text field that renders the decision title text
   def render_text_field
-    @render_text_field ||= UITextField.alloc.initWithFrame(CGRectNull).tap do |render_text_field|
+    @render_text_field ||= UITextView.alloc.initWithFrame(CGRectNull).tap do |render_text_field|
       render_text_field.textColor = UIColor.whiteColor
       render_text_field.backgroundColor = UIColor.clearColor
       render_text_field.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
+      render_text_field.returnKeyType = UIReturnKeyDone
     end
   end
 
@@ -252,21 +252,24 @@ class MainTableViewCell < UITableViewCell
   # UITextFieldDelegate methods
   #############################
  
-  def textFieldShouldReturn(text_field)
-    # close the keyboard on Enter
-    text_field.resignFirstResponder
-    false
+  def textView(text_view, shouldChangeTextInRange: range, replacementText: text)
+    if text.isEqualToString("\n")
+        text_view.resignFirstResponder
+        false
+    else
+        true
+    end
   end
  
-  def textFieldShouldBeginEditing(text_field)
+  def textViewShouldBeginEditing(text_field)
     true
   end
   
-  def textFieldDidBeginEditing(text_field) 
+  def textViewDidBeginEditing(text_field) 
     table_view_cell_delegate.cellDidBeginEditing(self) if table_view_cell_delegate != nil
   end
   
-  def textFieldDidEndEditing(text_field)
+  def textViewDidEndEditing(text_field)
     decision.title = text_field.text
     decision.created_at == nil ? decision.created_at = Time.now : decision.updated_at = Time.now
     cdq.save
