@@ -1,7 +1,7 @@
 class DecisionViewController < UIViewController
   
   extend IB
-  include DecisionUIScrollViewDelegate, DecisionTableViewDataSource
+  include NavigatorUIScrollViewDelegate, DecisionTableViewDataSource
   
   outlet :decision_title, UILabel
   outlet :decision_table_view, UITableView
@@ -15,13 +15,18 @@ class DecisionViewController < UIViewController
     decision_table_view.dataSource = self
     decision_table_view.delegate = self
     decision_title.text = decision.title
-    # tells table_view to use CustomTableViewCell class when it needs a cell with reuse identifier NAVIGATION_CELL_ID
+    
     decision_table_view.registerClass(UITableViewCell, forCellReuseIdentifier: NAVIGATION_CELL_ID)
     decision_table_view.separatorStyle = UITableViewCellSeparatorStyleNone
     decision_table_view.backgroundColor = UIColor.clearColor
     decision_table_view.rowHeight = UIScreen.mainScreen.bounds.size.height / 10
 
     decision_table_view.addGestureRecognizer(long_press_gesture)
+  end
+
+  # table reference for the scroll view delegate
+  def table_view_reference
+    decision_table_view
   end
 
   def long_press_gesture

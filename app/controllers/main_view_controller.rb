@@ -1,9 +1,10 @@
 class MainViewController < UIViewController
   
   extend IB
-  include MainTableViewDataSource, MainTableViewDelegate, MainTableViewCellDelegate, UIScrollViewDelegate
+  include MainTableViewDataSource, MainTableViewDelegate, MainTableViewCellDelegate, NewCellScrollViewDelegate
   
   TODO_CELL_ID = "cell"
+  NEW_CELL_PLACEHOLDER_ID = "new_cell_placeholder"
 
   outlet :table_view, UITableView
   
@@ -13,11 +14,17 @@ class MainViewController < UIViewController
     table_view.delegate = self
     # tells table_view to use CustomTableViewCell class when it needs a cell with reuse identifier TODO_CELL_ID
     table_view.registerClass(MainTableViewCell.self, forCellReuseIdentifier: TODO_CELL_ID)
+    table_view.registerClass(UITableViewCell, forCellReuseIdentifier: NEW_CELL_PLACEHOLDER_ID)
     table_view.separatorStyle = UITableViewCellSeparatorStyleNone
     table_view.backgroundColor = UIColor.blackColor
     table_view.rowHeight = UIScreen.mainScreen.bounds.size.height / 10
     # Very important. Without this the placeholder from UIScrollViewDelegate does not appear if the first action is a swipe to delete
     pulldown
+  end
+
+  # table reference for the scroll view delegat
+  def table_view_reference
+    table_view
   end
   
   #############################

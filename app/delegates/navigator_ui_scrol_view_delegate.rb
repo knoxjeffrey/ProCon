@@ -1,9 +1,10 @@
 #############################
 # UIScrollViewDelegate methods
-# contains scrollViewDidScroll, and other methods, to keep track of dragging the scrollView
+
+# table_view_reference delegate method needs to be included in controller for reference to the table view. Also register cell for reuse
 #############################
 
-module DecisionUIScrollViewDelegate
+module NavigatorUIScrollViewDelegate
   
   NavPullDown = Struct.new(:placeholder_cell, :pull_down_in_progress)
   
@@ -71,10 +72,6 @@ module DecisionUIScrollViewDelegate
 
   def pull_down_is_in_progress?(scroll_view)
     pulldown.pull_down_in_progress = scroll_view.contentOffset.y <= 0.0
-  end
-  
-  def table_view_reference
-    decision_table_view
   end
   
 end

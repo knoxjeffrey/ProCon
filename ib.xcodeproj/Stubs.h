@@ -45,12 +45,14 @@
 @property IBOutlet UITableView * decision_table_view;
 
 -(IBAction) viewDidLoad;
+-(IBAction) table_view_reference;
 -(IBAction) long_press_gesture;
 -(IBAction) overlay;
 -(IBAction) decision_object:(id) decision;
 -(IBAction) go_back;
 -(IBAction) number_of_menu_items;
 -(IBAction) image_for_item_at_index:(id) index;
+-(IBAction) background_color_for_index:(id) index;
 
 @end
 
@@ -59,6 +61,7 @@
 @property IBOutlet UITableView * table_view;
 
 -(IBAction) viewDidLoad;
+-(IBAction) table_view_reference;
 -(IBAction) open_decision:(id) decision;
 -(IBAction) decision_deleted:(id) decision;
 -(IBAction) new_decision_added;
