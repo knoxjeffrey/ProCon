@@ -1,15 +1,20 @@
 class MainViewController < UIViewController
   
+  DeletedCellHeight = Struct.new(:height)
+
   extend IB
   include MainTableViewDataSource, MainTableViewDelegate, MainTableViewCellDelegate, NewCellScrollViewDelegate
   
   TODO_CELL_ID = "cell"
   NEW_CELL_PLACEHOLDER_ID = "new_cell_placeholder"
 
+  attr_accessor :deleted_cell_height
+
   outlet :table_view, UITableView
   
   def viewDidLoad
     super
+    @deleted_cell_height = DeletedCellHeight.new(0)
     table_view.dataSource = self
     table_view.delegate = self
     # tells table_view to use CustomTableViewCell class when it needs a cell with reuse identifier TODO_CELL_ID
@@ -17,12 +22,17 @@ class MainViewController < UIViewController
     table_view.registerClass(UITableViewCell, forCellReuseIdentifier: NEW_CELL_PLACEHOLDER_ID)
     table_view.separatorStyle = UITableViewCellSeparatorStyleNone
     table_view.backgroundColor = UIColor.blackColor
-    table_view.rowHeight = UIScreen.mainScreen.bounds.size.height / 10
+    table_view.estimatedRowHeight = UIScreen.mainScreen.bounds.size.height / 10
+    table_view.rowHeight = UITableViewAutomaticDimension
     # Very important. Without this the placeholder from UIScrollViewDelegate does not appear if the first action is a swipe to delete
     pulldown
   end
 
-  # table reference for the scroll view delegat
+  def viewDidAppear(bool)
+    table_view.reloadData
+  end
+
+  # table reference for the scroll view delegate
   def table_view_reference
     table_view
   end
@@ -70,6 +80,7 @@ class MainViewController < UIViewController
     visible_cells.each_with_index do |cell, cell_index|
       if cell_index == index
         animate_cell_slide_to_left(index, cell, cell_index)
+        self.deleted_cell_height = cell.frame.size.height
       elsif start_animating
         animate_table_slide_up(cell, cell_index, visible_cells)
       end
@@ -103,8 +114,8 @@ class MainViewController < UIViewController
   def animate_table_slide_up(cell, cell_index, visible_cells)
     UIView.animateWithDuration(0.2, 
       delay: 0.2, 
-      options: UIViewAnimationOptionCurveEaseIn,
-      animations: proc { cell.frame = CGRectOffset(cell.frame, 0, -cell.frame.size.height) },
+      options: UIViewAnimationOptionTransitionNone,
+      animations: proc { cell.frame = CGRectOffset(cell.frame, 0, -self.deleted_cell_height) },
       completion: proc { |cell| table_view.reloadData if cell_index == visible_cells.count - 1 }
     )
   end
@@ -133,7 +144,7 @@ class MainViewController < UIViewController
     visible_cells.each do |cell|
       if cell.decision == new_decision_to_make
         edit_cell = cell
-        edit_cell.render_text_field.becomeFirstResponder # user can now type
+        edit_cell.render_text_view.becomeFirstResponder # user can now type
         break
       end
     end

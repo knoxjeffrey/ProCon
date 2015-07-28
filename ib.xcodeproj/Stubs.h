@@ -16,7 +16,7 @@
 @interface MainTableViewCell: UITableViewCell
 -(IBAction) layoutSubviews;
 -(IBAction) decision;
--(IBAction) render_text_field;
+-(IBAction) render_text_view;
 -(IBAction) open_label;
 -(IBAction) delete_label;
 -(IBAction) create_cue_label;
@@ -32,10 +32,10 @@
 -(IBAction) complete_left_swipe_cue:(id) label;
 -(IBAction) state_ended:(id) pan_gesture;
 -(IBAction) gestureRecognizerShouldBegin:(id) gesture_recognizer;
--(IBAction) textFieldShouldReturn:(id) text_field;
--(IBAction) textFieldShouldBeginEditing:(id) text_field;
--(IBAction) textFieldDidBeginEditing:(id) text_field;
--(IBAction) textFieldDidEndEditing:(id) text_field;
+-(IBAction) textViewDidChange:(id) text_view;
+-(IBAction) textViewShouldBeginEditing:(id) text_field;
+-(IBAction) textViewDidBeginEditing:(id) text_field;
+-(IBAction) textViewDidEndEditing:(id) text_field;
 
 @end
 
@@ -61,6 +61,7 @@
 @property IBOutlet UITableView * table_view;
 
 -(IBAction) viewDidLoad;
+-(IBAction) viewDidAppear:(id) bool;
 -(IBAction) table_view_reference;
 -(IBAction) open_decision:(id) decision;
 -(IBAction) decision_deleted:(id) decision;

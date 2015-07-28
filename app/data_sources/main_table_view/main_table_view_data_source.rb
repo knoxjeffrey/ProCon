@@ -25,14 +25,6 @@ module MainTableViewDataSource
       cell.decision = decision
     end
   end
-
-  #def tableView(tableView, didSelectRowAtIndexPath: indexPath)
-  #  performSegueWithIdentifier(see_decision, sender: sender)
-  #end
-  
-  def tableView(table_view, heightForRowAtIndexPath: indexPath)
-    table_view.rowHeight
-  end
   
   def decisions_ordered
     @decisions_ordered ||= Decision.sort_by(:created_at, order: :descending)

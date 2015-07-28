@@ -12,11 +12,55 @@ class MainTableViewCell < UITableViewCell
   
   def initWithStyle(style, reuseIdentifier: reuseIdentifier)
     super
+     
+
+    self.contentView.addSubview(render_text_view)
+
+    contactImageView = UIImageView.alloc.init
+    contactImage = UIImage.imageNamed("confused")
+ 
+contactImageView.translatesAutoresizingMaskIntoConstraints = false
+contactImageView.image = contactImage
+self.contentView.addSubview(contactImageView)
+
+
+self.contentView.addConstraints(
+         NSLayoutConstraint.constraintsWithVisualFormat(
+        # pipe symbol represents the superview and dashes are separators between elements and padding metrics
+        "H:|-5-[image(30)]-8-[title]-5-|", 
+        options: 0,
+        metrics: nil,
+        views: { "title" => render_text_view, "image" => contactImageView }
+      )
+         )
+
+self.contentView.addConstraints(
+         NSLayoutConstraint.constraintsWithVisualFormat(
+        # pipe symbol represents the superview and dashes are separators between elements and padding metrics
+        "V:|-5-[title]-(>=5)-|", 
+        options: 0,
+        metrics: nil,
+        views: { "title" => render_text_view, "image" => contactImageView }
+      )
+         )
+
+self.contentView.addConstraints(
+         NSLayoutConstraint.constraintsWithVisualFormat(
+        # pipe symbol represents the superview and dashes are separators between elements and padding metrics
+        "V:|-8-[image(31)]-(>=5)-|", 
+        options: 0,
+        metrics: nil,
+        views: { "title" => render_text_view, "image" => contactImageView }
+      )
+         )
+
     render_text_view.delegate = self
+    
     self.addSubview(delete_label)
     self.addSubview(open_label)
-    self.addSubview(render_text_view)
-    
+
+
+
     # remove the default blue highlight for selected cells
     self.selectionStyle = UITableViewCellSelectionStyleNone
     
@@ -34,18 +78,20 @@ class MainTableViewCell < UITableViewCell
   # position each subview
   def layoutSubviews
     super
+
+    
     
     #ensure the gradient layers occupies the full bounds
     gradient_layer.frame = self.bounds
-    
-    render_text_view.frame = CGRectMake(LABEL_LEFT_MARGIN, 0,
-                                    self.bounds.size.width - LABEL_LEFT_MARGIN,self.bounds.size.height)
 
     open_label.frame = CGRectMake(-self.bounds.size.width,
                                   0, self.bounds.size.width, self.bounds.size.height) 
 
     delete_label.frame = CGRectMake(self.bounds.size.width,
                                    0, self.bounds.size.width, self.bounds.size.height)
+
+    self.contentView.setNeedsLayout
+    self.contentView.layoutIfNeeded
   end
   
   def decision=(decision)
@@ -57,11 +103,13 @@ class MainTableViewCell < UITableViewCell
   
   # create a text field that renders the decision title text
   def render_text_view
-    @render_text_view ||= UITextView.alloc.initWithFrame(CGRectNull).tap do |render_text_view|
+    @render_text_view ||= UITextView.alloc.init.tap do |render_text_view|
       render_text_view.textColor = UIColor.whiteColor
       render_text_view.backgroundColor = UIColor.clearColor
       render_text_view.font = UIFont.fontWithName("HelveticaNeue", size: 16.0)
+      render_text_view.scrollEnabled = false
       render_text_view.returnKeyType = UIReturnKeyDone
+      render_text_view.translatesAutoresizingMaskIntoConstraints = false
     end
   end
 
@@ -259,6 +307,11 @@ class MainTableViewCell < UITableViewCell
     else
         true
     end
+  end
+
+  def textViewDidChange(text_view)
+    table_view_cell_delegate.table_view.beginUpdates
+    table_view_cell_delegate.table_view.endUpdates
   end
  
   def textViewShouldBeginEditing(text_field)
