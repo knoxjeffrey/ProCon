@@ -15,7 +15,7 @@ module NewCellScrollViewDelegate
   end
 
   def placeholder_height
-    UIScreen.mainScreen.bounds.size.height / 13
+    UIScreen.mainScreen.bounds.size.height / 10
   end
 
   def placeholder_width

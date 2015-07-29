@@ -8,6 +8,10 @@ module MainTableViewDelegate
   def tableView(table_view, willDisplayCell: cell, forRowAtIndexPath: index_path)
     cell.backgroundColor = color_for_index(index_path.row)
   end
+
+  def tableView(table_view, estimatedHeightForRowAtIndexPath: index_path)
+  	UITableViewAutomaticDimension
+  end
   
   # creates the color gradient from top to bottom cell
   def color_for_index(index_value)

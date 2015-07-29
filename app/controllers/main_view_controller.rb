@@ -3,7 +3,7 @@ class MainViewController < UIViewController
   DeletedCellHeight = Struct.new(:height)
 
   extend IB
-  include MainTableViewDataSource, MainTableViewDelegate, MainTableViewCellDelegate, NewCellScrollViewDelegate
+  include MainTableViewDataSource, MainTableViewDelegate, NewCellScrollViewDelegate
   
   TODO_CELL_ID = "cell"
   NEW_CELL_PLACEHOLDER_ID = "new_cell_placeholder"
@@ -22,8 +22,8 @@ class MainViewController < UIViewController
     table_view.registerClass(UITableViewCell, forCellReuseIdentifier: NEW_CELL_PLACEHOLDER_ID)
     table_view.separatorStyle = UITableViewCellSeparatorStyleNone
     table_view.backgroundColor = UIColor.blackColor
-    table_view.estimatedRowHeight = UIScreen.mainScreen.bounds.size.height / 10
-    table_view.rowHeight = UITableViewAutomaticDimension
+    #table_view.estimatedRowHeight = UIScreen.mainScreen.bounds.size.height / 10
+    #table_view.rowHeight = UITableViewAutomaticDimension
     # Very important. Without this the placeholder from UIScrollViewDelegate does not appear if the first action is a swipe to delete
     pulldown
   end

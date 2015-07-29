@@ -1,6 +1,8 @@
 class MainTableViewCell < UITableViewCell
   
   Gesture = Struct.new(:original_center, :delete_on_drag_release, :open_on_drag_release)
+
+  include MainTableViewCellDelegate
   
   LABEL_LEFT_MARGIN = 10.0
   UI_CUES_MARGIN = 30.0
@@ -13,49 +15,47 @@ class MainTableViewCell < UITableViewCell
   def initWithStyle(style, reuseIdentifier: reuseIdentifier)
     super
      
-
     self.contentView.addSubview(render_text_view)
 
     contactImageView = UIImageView.alloc.init
     contactImage = UIImage.imageNamed("confused")
- 
-contactImageView.translatesAutoresizingMaskIntoConstraints = false
-contactImageView.image = contactImage
-self.contentView.addSubview(contactImageView)
+    contactImageView.translatesAutoresizingMaskIntoConstraints = false
+    contactImageView.image = contactImage
+    self.contentView.addSubview(contactImageView)
 
 
-self.contentView.addConstraints(
-         NSLayoutConstraint.constraintsWithVisualFormat(
+    self.contentView.addConstraints(
+      NSLayoutConstraint.constraintsWithVisualFormat(
         # pipe symbol represents the superview and dashes are separators between elements and padding metrics
-        "H:|-5-[image(30)]-8-[title]-5-|", 
+        "H:|-10-[image(30)]-8-[title]-5-|", 
         options: 0,
         metrics: nil,
         views: { "title" => render_text_view, "image" => contactImageView }
       )
-         )
+    )
 
-self.contentView.addConstraints(
-         NSLayoutConstraint.constraintsWithVisualFormat(
+    self.contentView.addConstraints(
+      NSLayoutConstraint.constraintsWithVisualFormat(
         # pipe symbol represents the superview and dashes are separators between elements and padding metrics
-        "V:|-5-[title]-(>=5)-|", 
+        "V:|-10-[title]-(>=10)-|", 
         options: 0,
         metrics: nil,
         views: { "title" => render_text_view, "image" => contactImageView }
       )
-         )
+    )
 
-self.contentView.addConstraints(
-         NSLayoutConstraint.constraintsWithVisualFormat(
+    self.contentView.addConstraints(
+      NSLayoutConstraint.constraintsWithVisualFormat(
         # pipe symbol represents the superview and dashes are separators between elements and padding metrics
-        "V:|-8-[image(31)]-(>=5)-|", 
+        "V:|-10-[image(31)]-(>=10)-|", 
         options: 0,
         metrics: nil,
         views: { "title" => render_text_view, "image" => contactImageView }
       )
-         )
+    )
 
     render_text_view.delegate = self
-    
+
     self.addSubview(delete_label)
     self.addSubview(open_label)
 
@@ -79,8 +79,6 @@ self.contentView.addConstraints(
   def layoutSubviews
     super
 
-    
-    
     #ensure the gradient layers occupies the full bounds
     gradient_layer.frame = self.bounds
 
@@ -90,8 +88,8 @@ self.contentView.addConstraints(
     delete_label.frame = CGRectMake(self.bounds.size.width,
                                    0, self.bounds.size.width, self.bounds.size.height)
 
-    self.contentView.setNeedsLayout
-    self.contentView.layoutIfNeeded
+    #self.contentView.setNeedsLayout
+    #self.contentView.layoutIfNeeded
   end
   
   def decision=(decision)
@@ -117,8 +115,7 @@ self.contentView.addConstraints(
     @open_label ||= self.create_cue_label.tap do |open_label|
       edit_style = NSMutableParagraphStyle.new
       edit_style.tailIndent = -10
-      text_attributes = { NSParagraphStyleAttributeName => edit_style 
-      }
+      text_attributes = { NSParagraphStyleAttributeName => edit_style }
       open_label.attributedText = NSAttributedString.alloc.initWithString("Open", attributes: text_attributes)
 
       open_label.textAlignment = NSTextAlignmentRight
@@ -275,12 +272,12 @@ self.contentView.addConstraints(
       elsif gesture.open_on_drag_release
         table_view_cell_delegate.open_decision(decision)
       else 
-        # if the item is not being deleted, snap back to the original location
+        # if the item is not being deleted or opened, snap back to the original location
         UIView.animateWithDuration(0.2, 
           delay: 0.0, 
           options: UIViewAnimationOptionCurveEaseOut,
           animations: proc { self.frame = original_frame },
-          completion: proc { |view| table_view_cell_delegate.table_view.reloadData if self.frame = original_frame }
+          completion: proc { |view| break if self.frame = original_frame }
         )
       end
     end
@@ -297,36 +294,39 @@ self.contentView.addConstraints(
   end
   
   #############################
-  # UITextFieldDelegate methods
+  # UITextViewDelegate methods
   #############################
  
+  def textViewShouldBeginEditing(text_view)
+    true
+  end
+  
+  def textViewDidBeginEditing(text_view) 
+    cellDidBeginEditing(self) if table_view_cell_delegate != nil
+  end
+
+  def textViewDidChange(text_view)
+    UIView.animationsEnabled = false
+    table_view_cell_delegate.table_view.beginUpdates
+    table_view_cell_delegate.table_view.endUpdates
+    UIView.animationsEnabled = true
+    cellIsEditing(self)
+  end
+
   def textView(text_view, shouldChangeTextInRange: range, replacementText: text)
     if text.isEqualToString("\n")
         text_view.resignFirstResponder
         false
-    else
+    else 
         true
     end
   end
-
-  def textViewDidChange(text_view)
-    table_view_cell_delegate.table_view.beginUpdates
-    table_view_cell_delegate.table_view.endUpdates
-  end
- 
-  def textViewShouldBeginEditing(text_field)
-    true
-  end
   
-  def textViewDidBeginEditing(text_field) 
-    table_view_cell_delegate.cellDidBeginEditing(self) if table_view_cell_delegate != nil
-  end
-  
-  def textViewDidEndEditing(text_field)
-    decision.title = text_field.text
+  def textViewDidEndEditing(text_view)
+    decision.title = text_view.text
     decision.created_at == nil ? decision.created_at = Time.now : decision.updated_at = Time.now
     cdq.save
-    table_view_cell_delegate.cellDidEndEditing(self) if table_view_cell_delegate != nil
+    cellDidEndEditing(self) if table_view_cell_delegate != nil
   end
   
 end
